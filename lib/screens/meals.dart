@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/meal.dart';
+import '../widgets/meal_items.dart';
 
 class MealsScreen extends StatelessWidget {
   const MealsScreen({super.key, required this.title, required this.meal});
@@ -41,31 +42,12 @@ class MealsScreen extends StatelessWidget {
     }
     if (meal.isNotEmpty) {
       content = Center(
-        child: ListView.builder(
-            itemCount: meal.length,
-            itemBuilder: (context, index) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.network(meal[index].imageUrl),
-                  Text(
-                    meal[index].title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.primary),
-                  ),
-                  Text(
-                    meal[index].ingredients[index],
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.primary),
-                  )
-                ],
-              );
-            }),
-      );
+          child: ListView.builder(
+              itemExtent: MediaQuery.of(context).size.height * .24,
+              itemCount: meal.length,
+              itemBuilder: (context, index) => MealItems(
+                    meal: meal[index],
+                  )));
     }
     return Scaffold(
       appBar: AppBar(
