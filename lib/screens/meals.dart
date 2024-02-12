@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meals_app/screens/meal_detail_screen.dart';
+// import 'package:meals_app/screens/meal_detail_screen.dart';
+import 'package:meals_app/screens/meal_details.dart';
 
 import '../model/meal.dart';
 import '../widgets/meal_items.dart';
@@ -16,9 +17,9 @@ class MealsScreen extends StatelessWidget {
   void Function(Meal meal) toggledFavourite;
   void onSelectedMeal(BuildContext context, Meal meal) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return MealDetailScreen(
+      return MealDetailsScreen(
         meal: meal,
-        isFavouriteToggleMeal: toggledFavourite,
+        onToggleFavorite: toggledFavourite,
       );
     }));
   }

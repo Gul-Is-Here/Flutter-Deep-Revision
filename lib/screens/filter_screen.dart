@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum Filter { glutenFree, lactoseFree, vegetarian, vegan }
+enum Filter { glutenFree, lactoseFree, vegetarian, vegan, glutenFre }
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -18,79 +18,91 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Apply Filter"),
+        title: const Text("Your Filter"),
       ),
-      body: Column(
-        children: [
-          SwitchListTile(
-            value: glutenFreeFilterSet,
-            onChanged: (isChecked) {
-              setState(() {
-                glutenFreeFilterSet = isChecked;
-              });
-            },
-            title: Text(
-              'Gluten-Free',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (didPop) return;
+          Navigator.of(context).pop({
+            Filter.glutenFree: glutenFreeFilterSet,
+            Filter.lactoseFree: lactoseFreeFilterSet,
+            Filter.vegetarian: vegetarinaFilterSet,
+            Filter.vegan: veganFilterSet,
+          });
+        },
+        child: Column(
+          children: [
+            SwitchListTile(
+              value: glutenFreeFilterSet,
+              onChanged: (isChecked) {
+                setState(() {
+                  glutenFreeFilterSet = isChecked;
+                });
+              },
+              title: Text(
+                'Gluten-Free',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+              ),
+              subtitle: const Text('Only include Gluten-Free Meal'),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
             ),
-            subtitle: const Text('Only include Gluten-Free Meal'),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-          ),
-          SwitchListTile(
-            value: glutenFreeFilterSet,
-            onChanged: (isChecked) {
-              setState(() {
-                glutenFreeFilterSet = isChecked;
-              });
-            },
-            title: Text(
-              'Gluten-Free',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
+            SwitchListTile(
+              value: lactoseFreeFilterSet,
+              onChanged: (isChecked) {
+                setState(() {
+                  lactoseFreeFilterSet = isChecked;
+                });
+              },
+              title: Text(
+                'Lactose-Free',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+              ),
+              subtitle: const Text('Only include Lactose-Free Meal'),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
             ),
-            subtitle: const Text('Only include Gluten-Free Meal'),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-          ),
-          SwitchListTile(
-            value: glutenFreeFilterSet,
-            onChanged: (isChecked) {
-              setState(() {
-                glutenFreeFilterSet = isChecked;
-              });
-            },
-            title: Text(
-              'Gluten-Free',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
+            SwitchListTile(
+              value: vegetarinaFilterSet,
+              onChanged: (isChecked) {
+                setState(() {
+                  vegetarinaFilterSet = isChecked;
+                });
+              },
+              title: Text(
+                'Vegetarine',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+              ),
+              subtitle: const Text('Only include Vegetarine Meal'),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
             ),
-            subtitle: const Text('Only include Gluten-Free Meal'),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-          ),
-          SwitchListTile(
-            value: glutenFreeFilterSet,
-            onChanged: (isChecked) {
-              setState(() {
-                glutenFreeFilterSet = isChecked;
-              });
-            },
-            title: Text(
-              'Gluten-Free',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-            ),
-            subtitle: const Text('Only include Gluten-Free Meal'),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-          )
-        ],
+            SwitchListTile(
+              value: veganFilterSet,
+              onChanged: (isChecked) {
+                setState(() {
+                  veganFilterSet = isChecked;
+                });
+              },
+              title: Text(
+                'Vegan',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+              ),
+              subtitle: const Text('Only include Vegan Meal'),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+            )
+          ],
+        ),
       ),
     );
   }
