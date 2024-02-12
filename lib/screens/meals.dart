@@ -1,15 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:meals_app/screens/meal_detail_screen.dart';
 
 import '../model/meal.dart';
 import '../widgets/meal_items.dart';
 
+// ignore: must_be_immutable
 class MealsScreen extends StatelessWidget {
-  const MealsScreen({super.key, required this.title, required this.meal});
-  final String title;
+  MealsScreen(
+      {super.key,
+      this.title,
+      required this.meal,
+      required this.toggledFavourite});
+  final String? title;
   final List<Meal> meal;
+  void Function(Meal meal) toggledFavourite;
+  void onSelectedMeal(BuildContext context, Meal meal) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return MealDetailScreen(
+        meal: meal,
+        isFavouriteToggleMeal: toggledFavourite,
+      );
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget content = Center();
+    Widget content = const Center();
     if (meal.isEmpty) {
       content = Center(
         child: Column(
@@ -47,11 +63,15 @@ class MealsScreen extends StatelessWidget {
               itemCount: meal.length,
               itemBuilder: (context, index) => MealItems(
                     meal: meal[index],
+                    onSelectedMeal: onSelectedMeal,
                   )));
+    }
+    if (title == null) {
+      return content;
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title!),
       ),
       body: Center(child: content),
     );
