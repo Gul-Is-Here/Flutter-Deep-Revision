@@ -4,6 +4,7 @@ import 'package:meals_app/model/meal.dart';
 import 'package:meals_app/screens/categories.dart';
 // import 'package:meals_app/screens/categories_screen.dart';
 import 'package:meals_app/screens/filter_screen.dart';
+import 'package:meals_app/screens/filters.dart';
 import 'package:meals_app/screens/meals.dart';
 import 'package:meals_app/widgets/main_drawer.dart';
 
@@ -60,7 +61,7 @@ class _TabsScreenState extends State<TabsScreen> {
     if (identifer == 'filter') {
       final result = await Navigator.of(context)
           .push<Map<Filter, bool>>(MaterialPageRoute(builder: (context) {
-        return const FilterScreen();
+        return FiltersScreen(currentFilters: selectedFilter);
       }));
       setState(() {
         selectedFilter = result ?? kInitialFilter;
