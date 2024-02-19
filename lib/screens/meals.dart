@@ -1,80 +1,73 @@
 import 'package:flutter/material.dart';
-// import 'package:meals_app/screens/meal_detail_screen.dart';
-import 'package:meals_app/screens/meal_details.dart';
 
 import '../model/meal.dart';
-import '../widgets/meal_items.dart';
+import '../widgets/meal_item.dart';
+import 'meal_details.dart';
 
-// ignore: must_be_immutable
 class MealsScreen extends StatelessWidget {
-  MealsScreen(
-      {super.key,
-      this.title,
-      required this.meal,
-      required this.toggledFavourite});
+  const MealsScreen({
+    super.key,
+    this.title,
+    required this.meals,
+  });
+
   final String? title;
-  final List<Meal> meal;
-  void Function(Meal meal) toggledFavourite;
-  void onSelectedMeal(BuildContext context, Meal meal) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return MealDetailsScreen(
-        meal: meal,
-        onToggleFavorite: toggledFavourite,
-      );
-    }));
+  final List<Meal> meals;
+
+  void selectMeal(BuildContext context, Meal meal) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => MealDetailsScreen(
+          meal: meal,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget content = const Center();
-    if (meal.isEmpty) {
-      content = Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                textAlign: TextAlign.center,
-                'Oh ... There is no meal in this Category try different one',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                'Please try another category',
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.primaryContainer),
-              ),
-            ),
-          ],
+    Widget content = Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Uh oh ... nothing here!',
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Try selecting a different category!',
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+          ),
+        ],
+      ),
+    );
+
+    if (meals.isNotEmpty) {
+      content = ListView.builder(
+        itemCount: meals.length,
+        itemBuilder: (ctx, index) => MealItem(
+          meal: meals[index],
+          onSelectMeal: (meal) {
+            selectMeal(context, meal);
+          },
         ),
       );
     }
-    if (meal.isNotEmpty) {
-      content = Center(
-          child: ListView.builder(
-              itemExtent: MediaQuery.of(context).size.height * .24,
-              itemCount: meal.length,
-              itemBuilder: (context, index) => MealItems(
-                    meal: meal[index],
-                    onSelectedMeal: onSelectedMeal,
-                  )));
-    }
+
     if (title == null) {
       return content;
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title!),
       ),
-      body: Center(child: content),
+      body: content,
     );
   }
 }

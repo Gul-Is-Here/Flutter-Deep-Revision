@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:meals_app/model/dummy_data.dart';
-import 'package:meals_app/model/meal.dart';
-import 'package:meals_app/provider/meals_provider.dart';
 import 'package:meals_app/screens/categories.dart';
 import 'package:meals_app/screens/filters.dart';
 import 'package:meals_app/screens/meals.dart';
-import 'package:meals_app/widgets/main_drawer.dart';
 
-const kInitialFilter = {
+import '../providers/favorites_provider.dart';
+import '../providers/filters_provider.dart';
+import '../widgets/main_drawer.dart';
+
+const kInitialFilters = {
   Filter.glutenFree: false,
   Filter.lactoseFree: false,
   Filter.vegetarian: false,
@@ -19,109 +19,70 @@ class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  ConsumerState<TabsScreen> createState() => _TabsScreenState();
+  ConsumerState<TabsScreen> createState() {
+    return _TabsScreenState();
+  }
 }
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
-  final List<Meal> isFavourite = [];
-  Map<Filter, bool> selectedFilter = kInitialFilter;
-  int selectedPageIndex = 0;
-  String activeTitlePage = 'Categories';
-  void selectedPage(int index) {
+  int _selectedPageIndex = 0;
+
+  void _selectPage(int index) {
     setState(() {
-      selectedPageIndex = index;
+      _selectedPageIndex = index;
     });
   }
 
-  void _showInfoMessage(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 1),
-    ));
-  }
-
-  void isFavouriteToggled(Meal meal) {
-    final isExisted = isFavourite.contains(meal);
-    if (isExisted) {
-      setState(() {
-        isFavourite.remove(meal);
-        _showInfoMessage('Meal is no Longer Favourite');
-      });
-    } else {
-      setState(() {
-        isFavourite.add(meal);
-        _showInfoMessage('Meal Marked as Favourite');
-      });
-    }
-  }
-
-  void onSelectedScreen(String identifer) async {
+  void _setScreen(String identifier) async {
     Navigator.of(context).pop();
-    if (identifer == 'filter') {
-      final result = await Navigator.of(context)
-          .push<Map<Filter, bool>>(MaterialPageRoute(builder: (context) {
-        return FiltersScreen(currentFilters: selectedFilter);
-      }));
-      setState(() {
-        selectedFilter = result ?? kInitialFilter;
-      });
+    if (identifier == 'filters') {
+      await Navigator.of(context).push<Map<Filter, bool>>(
+        MaterialPageRoute(
+          builder: (ctx) => const FiltersScreen(),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final meals = ref.watch(mealsProvider);
-    final availableMeals = meals.where((meal) {
-      if (selectedFilter[Filter.glutenFree]! as bool && !meal.isGlutenFree) {
-        return false;
-      }
+    final availableMeals = ref.watch(filteredMealsProvider);
 
-      if (selectedFilter[Filter.lactoseFree]! as bool && !meal.isLactoseFree) {
-        return false;
-      }
-
-      if (selectedFilter[Filter.vegetarian]! as bool && !meal.isVegetarian) {
-        return false;
-      }
-
-      if (selectedFilter[Filter.vegan]! as bool && !meal.isVegan) {
-        return false;
-      }
-      return true;
-    }).toList();
-    Widget activeScreen = CategoriesScreen(
-      onToggleFavorite: isFavouriteToggled,
+    Widget activePage = CategoriesScreen(
       availableMeals: availableMeals,
     );
+    var activePageTitle = 'Categories';
 
-    if (selectedPageIndex == 1) {
-      activeScreen =
-          MealsScreen(toggledFavourite: isFavouriteToggled, meal: isFavourite);
+    if (_selectedPageIndex == 1) {
+      final favoriteMeals = ref.watch(favoriteMealsProvider);
+      activePage = MealsScreen(
+        meals: favoriteMeals,
+      );
+      activePageTitle = 'Your Favorites';
     }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(activeTitlePage),
+        title: Text(activePageTitle),
       ),
       drawer: MainDrawer(
-        onSelectedScreen: onSelectedScreen,
+        onSelectScreen: _setScreen,
       ),
-      body: activeScreen,
+      body: activePage,
       bottomNavigationBar: BottomNavigationBar(
-          currentIndex: selectedPageIndex,
-          onTap: selectedPage,
-          items: const [
-            BottomNavigationBarItem(
-                label: 'Categories',
-                icon: Icon(
-                  Icons.set_meal,
-                )),
-            BottomNavigationBarItem(
-                label: 'Favourite',
-                icon: Icon(
-                  Icons.favorite,
-                ))
-          ]),
+        onTap: _selectPage,
+        currentIndex: _selectedPageIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.set_meal),
+            label: 'Categories',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Favorites',
+          ),
+        ],
+      ),
     );
   }
 }
